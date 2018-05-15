@@ -1,0 +1,55 @@
+---
+title: "DV gr 2 excercise"
+author: "Bharat Sangal"
+date: "25 April 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(knitr)
+
+
+rape<-read.csv("C:/Users/Administrator/Desktop/DataScience/Data Visualisation/Data Set/rajanand-crime-in-india/20_Victims_of_rape.csv")
+
+relation=read.csv("C:/Users/Administrator/Desktop/DataScience/Data Visualisation/Data Set/rajanand-crime-in-india/21_Offenders_known_to_the_victim.csv")
+
+```
+
+
+
+```{r}
+ggplot(mydata, aes(x = factor(1), y=FR,fill=factor(group)) ) + geom_bar(width = 1,stat="identity")+coord_polar(theta = "y")
+
+r<-relation%>%summarise(neighbours=sum(No_of_Cases_in_which_offenders_were_Neighbours),otherknownpersons=sum(No_of_Cases_in_which_offenders_were_Other_Known_persons),family=sum(No_of_Cases_in_which_offenders_were_Parentsclose_family_members),relative=sum(No_of_Cases_in_which_offenders_were_Relatives))
+r
+ 
+r=as.data.frame(r)
+r
+c2<-rbind(r$neighbours,r$otherknownpersons,r$family,r$relative)
+c1<-c("neighbours","otherknownperson","family","relative")
+zz<-cbind(c1,c2)
+zz
+
+colnames(zz)<-c("relation","count")
+zz=as.data.frame(zz)
+zz
+
+
+ggplot(zz, aes(x=factor(1), y=count, fill = factor(relation)))+geom_bar(width = 1,stat="identity") #+coord_polar(theta="y") 
+
+yer<-relation%>%group_by(Year)%>%summarise(neighbours=sum(No_of_Cases_in_which_offenders_were_Neighbours),otherknownpersons=sum(No_of_Cases_in_which_offenders_were_Other_Known_persons),family=sum(No_of_Cases_in_which_offenders_were_Parentsclose_family_members),relative=sum(No_of_Cases_in_which_offenders_were_Relatives),total=sum(No_of_Cases_in_which_offenders_were_known_to_the_Victims))
+
+ggplot(yer, aes(x = `Year`)) +   geom_line(aes(y = neighbours, colour = "neighbours")) +   geom_line(aes(y = otherknownpersons, colour = "otherpersons"))+geom_line(aes(y = family, colour = "family")) +   geom_line(aes(y = relative, colour = "relative"))+geom_line(aes(y = total, colour = "total"))+ theme_bw()+ylab("count")+scale_x_continuous(breaks = round(seq(min(yer$Year), max(yer$Year), by = 1),1))
+
+
+
+```
+
